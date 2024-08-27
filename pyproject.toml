@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "pyqcodeeditor"
+version = "0.1.0"
+description = "A qtpy implementation of Megaxela’s C++ Qt widget QCodeEditor."
+authors = ["zimolab <zimolab@aliyun.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.8, <4.0"
+qtpy = "^2.4.1"
+
+
+[tool.poetry.group.dev.dependencies]
+black = "^24.8.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
