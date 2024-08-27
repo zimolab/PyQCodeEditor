@@ -10,7 +10,7 @@ The orginal QCodeEditor can be found here: https://github.com/Megaxela/QCodeEdit
 
 ## Status
 
-Now the following features are implemented:
+### Now the following features are implemented:
 
 1. Auto parentheses.
 2. Different highlight rules.
@@ -20,7 +20,7 @@ Now the following features are implemented:
 6. Support custom themes and styles
 7. Pure python
 
-Unimplemented and known bugs:
+### Unimplemented and known bugs:
 
 - Frame selection (I write the python according to the original C++ code, but some bugs are occurred and 
 I don't know why and how fix it for now)
@@ -28,9 +28,9 @@ I don't know why and how fix it for now)
 - Highlight for python's multi-line string are not fully behave as expected (again I don't time to look into it and find
 a workaround now)
 
-- Only Python and Json highlighters are implemented now.
+- Only python highlighter is implemented now.
 
-Different from the original project:
+### Different from the original project:
 
 - The styles and language rules are defined in json instead of xml (I don't like xml)
 
@@ -44,6 +44,8 @@ Different from the original project:
 ```bash
 pip install PyQCodeEditor
 ```
+Not uploaded to pypi yet, I will do it soon. 
+For now, you can clone this repo and install it by yourself.
 
 ### Install the python binding of QT you want, for example, PySide2
 
