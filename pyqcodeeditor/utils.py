@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os.path
+import warnings
 from contextlib import AbstractContextManager
 from importlib import resources
 from pathlib import Path
@@ -8,6 +9,8 @@ from typing import TextIO
 
 from qtpy.QtCore import QRegularExpression
 from qtpy.QtGui import QKeyEvent
+
+from .QLanguage import QLanguage
 
 BASE_PATH = os.path.dirname(__file__)
 RES_PATH = os.path.join(BASE_PATH, "resource")
@@ -103,3 +106,15 @@ def is_shortcut(event: QKeyEvent, modifies, keys) -> bool:
     if not isinstance(keys, (list, tuple, set)):
         keys = [keys]
     return has_modifier(event, *modifies) and key_pressed(event, *keys)
+
+
+def load_builtin_language(filename: str) -> QLanguage | None:
+    lang_file = get_language_file(filename)
+    if not lang_file or not os.path.isfile(lang_file):
+        warnings.warn(f"Language file not found: {lang_file}")
+        return None
+    lang = QLanguage(lang_file)
+    if lang.isLoaded():
+        return lang
+    warnings.warn(f"Language file not loaded: {lang_file}")
+    return None

@@ -1,3 +1,4 @@
 from .QPythonCompleter import QPythonCompleter
+from .QCXXCompleter import QCXXCompleter
 
-__all__ = ["QPythonCompleter"]
+__all__ = ["QPythonCompleter", "QCXXCompleter"]
