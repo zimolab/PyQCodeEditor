@@ -24,11 +24,13 @@ The original QCodeEditor can be found here: https://github.com/Megaxela/QCodeEdi
 **Completers for:**
 1. [C++](pyqcodeeditor/completers/QCXXCompleter.py)
 2. [Python](pyqcodeeditor/completers/QPythonCompleter.py)
+3. [Lua](pyqcodeeditor/completers/QLuaCompleter.py)
 
 **Highlighters for:**
 1. [C++](pyqcodeeditor/highlighters/QCXXHighlighter.py)
 2. [Python](pyqcodeeditor/highlighters/QPythonHighlighter.py)
 3. [Json](pyqcodeeditor/highlighters/QJSONHighlighter.py)
+4. [Lua](pyqcodeeditor/highlighters/QLuaHighlighter.py)
 
 
 ### Unimplemented and known bugs:
