@@ -21,6 +21,16 @@ The original QCodeEditor can be found here: https://github.com/Megaxela/QCodeEdi
 6. Support custom themes and styles
 7. Pure python, No C++ code
 
+**Completers for:**
+1. [C++](pyqcodeeditor/completers/QCXXCompleter.py)
+2. [Python](pyqcodeeditor/completers/QPythonCompleter.py)
+
+**Highlighters for:**
+1. [C++](pyqcodeeditor/highlighters/QCXXHighlighter.py)
+2. [Python](pyqcodeeditor/highlighters/QPythonHighlighter.py)
+3. [Json](pyqcodeeditor/highlighters/QJSONHighlighter.py)
+
+
 ### Unimplemented and known bugs:
 
 - Frame selection (I write the python according to the original C++ code, but some bugs are occurred and 
@@ -28,8 +38,6 @@ I don't know why and how fix it for now)
 
 - Highlight for python's multi-line string are not fully behave as expected (again I don't time to look into it and find
 a workaround now)
-
-- Only python、json highlighter are implemented now.
 
 ### Different from QCodeEditor:
 
