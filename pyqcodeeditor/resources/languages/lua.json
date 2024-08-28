@@ -1,0 +1,49 @@
+{
+  "Keyword": [
+    "break",
+    "do",
+    "else",
+    "elseif",
+    "end",
+    "false",
+    "for",
+    "function",
+    "if",
+    "in",
+    "repeat",
+    "return",
+    "then",
+    "until",
+    "while"
+  ],
+  "Operator": [
+    "\\+",
+    "\\-",
+    "\\*",
+    "\\/",
+    "\\%",
+    "\\^",
+    "==",
+    "~=",
+    ">",
+    "<",
+    ">=",
+    "<=",
+    "and",
+    "or",
+    "not",
+    "\\.\\.",
+    "\\#"
+  ],
+  "Type": [
+    "local",
+    "nil",
+    "boolean",
+    "number",
+    "string",
+    "function",
+    "userdata",
+    "thread",
+    "table"
+  ]
+}
