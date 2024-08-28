@@ -1,12 +1,13 @@
 # PyQCodeEditor
 
-A simple code edit widget for qt python bindings.
+A simple code edit widget for pyside and pyqt (qtpy).
 
 ## Description
-This is a python implementation of the QCodeEditor（written in C++ Qt）. This project uses qtpy as the abstract layer of different python bindings of Qt, so that 
-users can chose whatever PyQt5、PyQt6、PySide2、PySide6 they want.
+This is a python implementation of the QCodeEditor（written in C++ Qt）. 
+This project uses qtpy as the abstract layer of different python bindings of Qt, so that the user can choose whatever
+python binding of qt they want, like pyqt5、pyqt6、pyside2、pyside6.
 
-The orginal QCodeEditor can be found here: https://github.com/Megaxela/QCodeEditor.
+The original QCodeEditor can be found here: https://github.com/Megaxela/QCodeEditor.
 
 ## Status
 
@@ -18,7 +19,7 @@ The orginal QCodeEditor can be found here: https://github.com/Megaxela/QCodeEdit
 4. Replace tabs with spaces.
 5. Some builtin completion and highlight rules
 6. Support custom themes and styles
-7. Pure python
+7. Pure python, No C++ code
 
 ### Unimplemented and known bugs:
 
@@ -28,9 +29,9 @@ I don't know why and how fix it for now)
 - Highlight for python's multi-line string are not fully behave as expected (again I don't time to look into it and find
 a workaround now)
 
-- Only python highlighter is implemented now.
+- Only python、json highlighter are implemented now.
 
-### Different from the original project:
+### Different from QCodeEditor:
 
 - The styles and language rules are defined in json instead of xml (I don't like xml)
 
@@ -44,8 +45,6 @@ a workaround now)
 ```bash
 pip install PyQCodeEditor
 ```
-Not uploaded to pypi yet, I will do it soon. 
-For now, you can clone this repo and install it by yourself.
 
 ### Install the python binding of QT you want, for example, PySide2
 
