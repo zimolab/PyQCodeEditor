@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "pyqcodeeditor"
-version = "0.1.0"
-description = "A qtpy implementation of Megaxela’s C++ Qt widget QCodeEditor."
+version = "0.1.1"
+description = "A qtpy implementation of Megaxela’s QCodeEditor (based on C++ Qt)."
 authors = ["zimolab <zimolab@aliyun.com>"]
 readme = "README.md"
 
