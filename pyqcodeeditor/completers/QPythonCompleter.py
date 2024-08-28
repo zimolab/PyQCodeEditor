@@ -1,38 +1,16 @@
 from __future__ import annotations
 
-import os
-import warnings
+from qtpy.QtCore import QObject
 
-from qtpy.QtCore import QObject, QStringListModel, Qt
-from qtpy.QtWidgets import QCompleter
-
-from .. import utils
-from ..QLanguage import QLanguage
+from ..QLanguageCompleter import QLanguageCompleter
 
 
-class QPythonCompleter(QCompleter):
+class QPythonCompleter(QLanguageCompleter):
     def __init__(self, parent: QObject | None = None):
         super().__init__(parent)
 
-        _list = []
+    def languageFile(self) -> str:
+        return "python.json"
 
-        lang_file = utils.get_language_file("python.json")
-        if not os.path.isfile(lang_file):
-            warnings.warn(f"Language file not found: {lang_file}")
-            return
-
-        language = QLanguage(lang_file)
-        if not language.isLoaded():
-            warnings.warn(f"Language file not loaded: {lang_file}")
-            return
-        keys = language.keys()
-        for key in keys:
-            names = language.names(key)
-            if not names:
-                continue
-            _list.extend(names)
-        self.setModel(QStringListModel(_list, self))
-        self.setCompletionColumn(0)
-        self.setModelSorting(QCompleter.CaseInsensitivelySortedModel)
-        self.setCaseSensitivity(Qt.CaseSensitive)
-        self.setWrapAround(True)
+    def isBuiltinLanguage(self) -> bool:
+        return True

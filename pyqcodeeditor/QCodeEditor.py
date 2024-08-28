@@ -13,7 +13,7 @@ from qtpy.QtGui import (
     QResizeEvent,
     QBrush,
 )
-from qtpy.QtWidgets import QCompleter, QTextEdit, QWidget
+from qtpy.QtWidgets import QCompleter, QTextEdit, QWidget, QAbstractItemView
 
 from . import utils
 
@@ -40,7 +40,7 @@ class QCodeEditor(QTextEdit):
         super().__init__(parent)
 
         self.m_highlighter: QStyleSyntaxHighlighter | None = None
-        self.m_syntaxStyle: QSyntaxStyle | None = None
+        self.m_syntaxStyle: QSyntaxStyle = QSyntaxStyle.defaultStyle()
         self.m_lineNumberArea: QLineNumberArea = QLineNumberArea(self)
         self.m_completer: QCompleter | None = None
         # self.m_framedAttribute: QFramedTextAttribute = QFramedTextAttribute(self)
@@ -54,7 +54,9 @@ class QCodeEditor(QTextEdit):
         self._initDocumentLayoutHandlers()
         self._initFont()
         self._performConnections()
+
         self.setSyntaxStyle(QSyntaxStyle.defaultStyle())
+
         # init update of line number area
         self.updateLineNumberAreaWidth(0)
 
@@ -86,19 +88,21 @@ class QCodeEditor(QTextEdit):
 
     def setHighlighter(self, highlighter: QStyleSyntaxHighlighter):
         if self.m_highlighter is not None:
-            # self.m_highlighter.setDocument(None)
             self.m_highlighter.setSyntaxStyle(None)
             self.m_highlighter.deleteLater()
             self.m_highlighter = None
 
         self.m_highlighter = highlighter
-
         if self.m_highlighter:
             self.m_highlighter.setSyntaxStyle(self.m_syntaxStyle)
             self.m_highlighter.setDocument(self.document())
 
-    def setSyntaxStyle(self, syntaxStyle: QSyntaxStyle | None):
-        if self.m_syntaxStyle is not None:
+            if self.m_highlighter.parent() is None:
+                highlighter.setParent(self)
+
+    def setSyntaxStyle(self, syntaxStyle: QSyntaxStyle):
+        assert syntaxStyle is not None
+        if syntaxStyle != QSyntaxStyle.defaultStyle():
             self.m_syntaxStyle.clear()
             self.m_syntaxStyle.deleteLater()
             self.m_syntaxStyle = None
@@ -106,10 +110,10 @@ class QCodeEditor(QTextEdit):
         self.m_syntaxStyle = syntaxStyle
         # self.m_framedAttribute.setSyntaxStyle(syntaxStyle)
         self.m_lineNumberArea.setSyntaxStyle(syntaxStyle)
-
         if self.m_highlighter:
             self.m_highlighter.setSyntaxStyle(syntaxStyle)
-
+            if self.m_syntaxStyle.parent() is None:
+                self.m_syntaxStyle.setParent(self)
         self.updateStyle()
 
     def setAutoParentheses(self, enable: bool):
@@ -137,7 +141,10 @@ class QCodeEditor(QTextEdit):
         return self.m_autoIndentation
 
     def setCompleter(self, completer: QCompleter | None):
-        if self.m_completer:
+        if self.m_completer is not None:
+            popup: QAbstractItemView = self.m_completer.popup()
+            if popup:
+                popup.hide()
             # noinspection PyUnresolvedReferences
             self.m_completer.activated.disconnect(self.insertCompletion)
             self.m_completer.deleteLater()
@@ -151,6 +158,8 @@ class QCodeEditor(QTextEdit):
         self.m_completer.setCompletionMode(QCompleter.CompletionMode.PopupCompletion)
         # noinspection PyUnresolvedReferences
         self.m_completer.activated.connect(self.insertCompletion)
+        if self.m_completer.parent() is None:
+            completer.setParent(self)
 
     def completer(self) -> QCompleter | None:
         return self.m_completer
@@ -168,6 +177,7 @@ class QCodeEditor(QTextEdit):
         self.setViewportMargins(self.m_lineNumberArea.sizeHint().width(), 0, 0, 0)
 
     def updateLineNumberArea(self, rect: QRect):
+        # noinspection PyArgumentList
         self.m_lineNumberArea.update(
             0, rect.y(), self.m_lineNumberArea.sizeHint().width(), rect.height()
         )

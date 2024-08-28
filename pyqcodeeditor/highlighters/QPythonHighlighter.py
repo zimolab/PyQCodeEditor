@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import os.path
-import warnings
 from typing import List
 
 from qtpy.QtCore import QRegularExpression
@@ -10,7 +8,6 @@ from qtpy.QtGui import QTextDocument
 from .QHighlightBlockRule import QHighlightBlockRule
 from .QHighlightRule import QHighlightRule
 from .. import QStyleSyntaxHighlighter, utils
-from ..QLanguage import QLanguage
 
 
 # noinspection PyPep8Naming
@@ -29,23 +26,8 @@ class QPythonHighlighter(QStyleSyntaxHighlighter.QStyleSyntaxHighlighter):
             r"(\b([A-Za-z0-9_]+)\s+[A-Za-z]{1}[A-Za-z0-9_]+\s*[;=])"
         )
 
-        lang_file = utils.get_language_file("python.json")
-        if not os.path.isfile(lang_file):
-            warnings.warn(f"Language file not found: {lang_file}")
-            return
+        self._loadLanguageRules()
 
-        language = QLanguage(lang_file)
-        if not language.isLoaded():
-            warnings.warn(f"Language file not loaded: {lang_file}")
-            return
-        for key in language.keys():
-            names = language.names(key)
-            if not names:
-                continue
-            for name in names:
-                self.m_highlightRules.append(
-                    QHighlightRule(QRegularExpression(rf"\b{name}\b"), key)
-                )
         # Following rules has higher priority to display
         # than language specific keys
         # So they must be applied at last.
@@ -137,3 +119,16 @@ class QPythonHighlighter(QStyleSyntaxHighlighter.QStyleSyntaxHighlighter):
             startIndex = utils.index_of(
                 text, blockRules.startPattern, startIndex + matchLength
             )
+
+    def _loadLanguageRules(self):
+        language = utils.load_builtin_language("python.json")
+        if not language:
+            return
+        for key in language.keys():
+            names = language.names(key)
+            if not names:
+                continue
+            for name in names:
+                self.m_highlightRules.append(
+                    QHighlightRule(QRegularExpression(rf"\b{name}\b"), key)
+                )

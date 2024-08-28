@@ -1,7 +1,7 @@
 from qtpy.QtWidgets import QApplication
 from pyqcodeeditor.QCodeEditor import QCodeEditor
 from pyqcodeeditor.highlighters.QPythonHighlighter import QPythonHighlighter
-from pyqcodeeditor.completers.QPythonCompleter import QPythonCompleter
+from pyqcodeeditor.completers import QPythonCompleter
 
 app = QApplication([])
 editor = QCodeEditor()

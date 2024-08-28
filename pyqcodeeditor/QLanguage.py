@@ -3,18 +3,15 @@ from __future__ import annotations
 import json
 from typing import List, Dict
 
-from qtpy.QtCore import QObject
-
 
 # noinspection PyPep8Naming
-class QLanguage(QObject):
-
-    def __init__(self, file: str = None, parent: QObject | None = None):
-        super().__init__(parent)
+class QLanguage(object):
+    def __init__(self, file: str | None = None):
+        super().__init__()
         self.m_loaded: bool = False
         self.m_list: Dict[str, List[str]] = {}
-
-        self.load(file)
+        if file:
+            self.load(file)
 
     def load(self, file: str, encoding="utf-8", errors="strict") -> bool:
         if file is None:
