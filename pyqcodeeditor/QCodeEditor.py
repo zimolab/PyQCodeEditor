@@ -54,6 +54,9 @@ class QCodeEditor(QTextEdit):
         self._defaultIndent: int = self.tabReplaceSize()
         self._fontSize: int = DEFAULT_FONT_POINT_SIZE
 
+        _font = QFontDatabase.systemFont(QFontDatabase.FixedFont)
+        self.setFont(_font)
+
         self._initDocumentLayoutHandlers()
         self._initFont()
         self._performConnections()
@@ -89,14 +92,13 @@ class QCodeEditor(QTextEdit):
             cursor.movePosition(QTextCursor.NextBlock)
         return 0
 
-
     def setFontSize(self, fontSize: int):
         assert fontSize > 0
-        self._fontSize = fontSize
-        fnt = QFontDatabase.systemFont(QFontDatabase.FixedFont)
-        fnt.setFixedPitch(True)
-        fnt.setPointSize(self._fontSize)
-        self.setFont(fnt)
+        font = self.font()
+        font.setPointSize(fontSize)
+        font.setFixedPitch(True)
+        self.setFont(font)
+        self._updateLineNumberAreaWidth(0)
 
     def fontSize(self) -> int:
         return self._fontSize
