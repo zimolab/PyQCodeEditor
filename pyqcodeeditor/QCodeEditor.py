@@ -52,7 +52,6 @@ class QCodeEditor(QTextEdit):
         self._replaceTab: bool = True
         self._tabReplace: str = " " * DEFAULT_TAB_WIDTH
         self._defaultIndent: int = self.tabReplaceSize()
-        self._fontSize: int = DEFAULT_FONT_POINT_SIZE
 
         _font = QFontDatabase.systemFont(QFontDatabase.FixedFont)
         self.setFont(_font)
@@ -101,7 +100,7 @@ class QCodeEditor(QTextEdit):
         self._updateLineNumberAreaWidth(0)
 
     def fontSize(self) -> int:
-        return self._fontSize
+        return self.font().pointSize()
 
     def setHighlighter(self, highlighter: QStyleSyntaxHighlighter):
         if self._highlighter is not None:
