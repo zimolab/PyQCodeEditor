@@ -38,7 +38,7 @@ The original QCodeEditor can be found here: https://github.com/Megaxela/QCodeEdi
 - Frame selection (I write the python according to the original C++ code, but some bugs are occurred and 
 I don't know why and how fix it for now)
 
-- Highlighting python's multi-line string and c++'s multi-line comment are not fully behave as expected
+- Highlighting for python's multi-line strings is not fully behave as expected
 (again I don't time to look into it and find a workaround now, any help is welcome)
 
 ### Different from QCodeEditor:

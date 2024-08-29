@@ -72,7 +72,7 @@ class QCXXHighlighter(QStyleSyntaxHighlighter):
             startIndex = utils.index_of(text, self.m_commentStartPattern, 0)
 
         while startIndex >= 0:
-            match = self.m_commentStartPattern.match(text, startIndex)
+            match = self.m_commentEndPattern.match(text, startIndex)
             endIndex = match.capturedStart()
             if endIndex == -1:
                 self.setCurrentBlockState(1)
@@ -83,7 +83,7 @@ class QCXXHighlighter(QStyleSyntaxHighlighter):
                 startIndex, commentLength, self.syntaxStyle().getFormat("Comment")
             )
             startIndex = utils.index_of(
-                text, self.m_commentEndPattern, startIndex + commentLength
+                text, self.m_commentStartPattern, startIndex + commentLength
             )
 
     def _checkForInclude(self, text: str):
