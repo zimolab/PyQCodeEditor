@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import List
 
+# noinspection PyUnresolvedReferences
 from qtpy.QtCore import QRect, QMimeData, Qt
 from qtpy.QtGui import (
     QTextCursor,
@@ -22,7 +23,6 @@ from .QLineNumberArea import QLineNumberArea
 from .QStyleSyntaxHighlighter import QStyleSyntaxHighlighter
 from .QSyntaxStyle import QSyntaxStyle
 
-DEFAULT_TAB_WIDTH = 4
 
 PARENTHESES = [
     ("(", ")"),
@@ -32,6 +32,9 @@ PARENTHESES = [
     ("'", "'"),
 ]
 
+DEFAULT_FONT_POINT_SIZE: int = 14
+DEFAULT_TAB_WIDTH: int = 4
+
 
 # noinspection PyPep8Naming
 class QCodeEditor(QTextEdit):
@@ -39,17 +42,17 @@ class QCodeEditor(QTextEdit):
     def __init__(self, parent: QWidget | None = None):
         super().__init__(parent)
 
-        self.m_highlighter: QStyleSyntaxHighlighter | None = None
-        self.m_syntaxStyle: QSyntaxStyle = QSyntaxStyle.defaultStyle()
-        self.m_lineNumberArea: QLineNumberArea = QLineNumberArea(self)
-        self.m_completer: QCompleter | None = None
+        self._highlighter: QStyleSyntaxHighlighter | None = None
+        self._syntaxStyle: QSyntaxStyle = QSyntaxStyle.defaultStyle()
+        self._lineNumberArea: QLineNumberArea = QLineNumberArea(self)
+        self._completer: QCompleter | None = None
         # self.m_framedAttribute: QFramedTextAttribute = QFramedTextAttribute(self)
-        self.m_autoIndentation: bool = True
-        self.m_autoParentheses: bool = True
-        self.m_replaceTab: bool = True
-        self.m_tabReplace: str = " " * 4
-        self.m_defaultIndent: int = self.tabReplaceSize()
-        self.m_fontSize: int = 20
+        self._autoIndentation: bool = True
+        self._autoParentheses: bool = True
+        self._replaceTab: bool = True
+        self._tabReplace: str = " " * DEFAULT_TAB_WIDTH
+        self._defaultIndent: int = self.tabReplaceSize()
+        self._fontSize: int = DEFAULT_FONT_POINT_SIZE
 
         self._initDocumentLayoutHandlers()
         self._initFont()
@@ -58,9 +61,9 @@ class QCodeEditor(QTextEdit):
         self.setSyntaxStyle(QSyntaxStyle.defaultStyle())
 
         # init update of line number area
-        self.updateLineNumberAreaWidth(0)
+        self._updateLineNumberAreaWidth(0)
 
-    def getFirstVisibleBlock(self) -> int:
+    def _getFirstVisibleBlock(self) -> int:
         doc: QTextDocument = self.document()
         cursor = QTextCursor(doc)
         cursor.movePosition(QTextCursor.Start)
@@ -86,86 +89,98 @@ class QCodeEditor(QTextEdit):
             cursor.movePosition(QTextCursor.NextBlock)
         return 0
 
+
+    def setFontSize(self, fontSize: int):
+        assert fontSize > 0
+        self._fontSize = fontSize
+        fnt = QFontDatabase.systemFont(QFontDatabase.FixedFont)
+        fnt.setFixedPitch(True)
+        fnt.setPointSize(self._fontSize)
+        self.setFont(fnt)
+
+    def fontSize(self) -> int:
+        return self._fontSize
+
     def setHighlighter(self, highlighter: QStyleSyntaxHighlighter):
-        if self.m_highlighter is not None:
-            self.m_highlighter.setSyntaxStyle(None)
-            self.m_highlighter.deleteLater()
-            self.m_highlighter = None
+        if self._highlighter is not None:
+            self._highlighter.setSyntaxStyle(None)
+            self._highlighter.deleteLater()
+            self._highlighter = None
 
-        self.m_highlighter = highlighter
-        if self.m_highlighter:
-            self.m_highlighter.setSyntaxStyle(self.m_syntaxStyle)
-            self.m_highlighter.setDocument(self.document())
+        self._highlighter = highlighter
+        if self._highlighter:
+            self._highlighter.setSyntaxStyle(self._syntaxStyle)
+            self._highlighter.setDocument(self.document())
 
-            if self.m_highlighter.parent() is None:
+            if self._highlighter.parent() is None:
                 highlighter.setParent(self)
 
     def setSyntaxStyle(self, syntaxStyle: QSyntaxStyle):
         assert syntaxStyle is not None
         if syntaxStyle != QSyntaxStyle.defaultStyle():
-            self.m_syntaxStyle.clear()
-            self.m_syntaxStyle.deleteLater()
-            self.m_syntaxStyle = None
+            self._syntaxStyle.clear()
+            self._syntaxStyle.deleteLater()
+            self._syntaxStyle = None
 
-        self.m_syntaxStyle = syntaxStyle
+        self._syntaxStyle = syntaxStyle
         # self.m_framedAttribute.setSyntaxStyle(syntaxStyle)
-        self.m_lineNumberArea.setSyntaxStyle(syntaxStyle)
-        if self.m_highlighter:
-            self.m_highlighter.setSyntaxStyle(syntaxStyle)
-            if self.m_syntaxStyle.parent() is None:
-                self.m_syntaxStyle.setParent(self)
-        self.updateStyle()
+        self._lineNumberArea.setSyntaxStyle(syntaxStyle)
+        if self._highlighter:
+            self._highlighter.setSyntaxStyle(syntaxStyle)
+            if self._syntaxStyle.parent() is None:
+                self._syntaxStyle.setParent(self)
+        self._updateStyle()
 
     def setAutoParentheses(self, enable: bool):
-        self.m_autoParentheses = enable
+        self._autoParentheses = enable
 
     def autoParentheses(self) -> bool:
-        return self.m_autoParentheses
+        return self._autoParentheses
 
     def setTabReplace(self, enable: bool):
-        self.m_replaceTab = enable
+        self._replaceTab = enable
 
     def tabReplace(self) -> bool:
-        return self.m_replaceTab
+        return self._replaceTab
 
     def setTabReplaceSize(self, val: int):
-        self.m_tabReplace = " " * val
+        self._tabReplace = " " * val
 
     def tabReplaceSize(self) -> int:
-        return len(self.m_tabReplace)
+        return len(self._tabReplace)
 
     def setAutoIndentation(self, enable: bool):
-        self.m_autoIndentation = enable
+        self._autoIndentation = enable
 
     def autoIndentation(self) -> bool:
-        return self.m_autoIndentation
+        return self._autoIndentation
 
     def setCompleter(self, completer: QCompleter | None):
-        if self.m_completer is not None:
-            popup: QAbstractItemView = self.m_completer.popup()
+        if self._completer is not None:
+            popup: QAbstractItemView = self._completer.popup()
             if popup:
                 popup.hide()
             # noinspection PyUnresolvedReferences
-            self.m_completer.activated.disconnect(self.insertCompletion)
-            self.m_completer.deleteLater()
-            self.m_completer = None
+            self._completer.activated.disconnect(self._insertCompletion)
+            self._completer.deleteLater()
+            self._completer = None
 
-        self.m_completer = completer
-        if not self.m_completer:
+        self._completer = completer
+        if not self._completer:
             return
 
-        self.m_completer.setWidget(self)
-        self.m_completer.setCompletionMode(QCompleter.CompletionMode.PopupCompletion)
+        self._completer.setWidget(self)
+        self._completer.setCompletionMode(QCompleter.CompletionMode.PopupCompletion)
         # noinspection PyUnresolvedReferences
-        self.m_completer.activated.connect(self.insertCompletion)
-        if self.m_completer.parent() is None:
+        self._completer.activated.connect(self._insertCompletion)
+        if self._completer.parent() is None:
             completer.setParent(self)
 
     def completer(self) -> QCompleter | None:
-        return self.m_completer
+        return self._completer
 
-    def insertCompletion(self, s: str):
-        if self.m_completer.widget() != self:
+    def _insertCompletion(self, s: str):
+        if self._completer.widget() != self:
             return
         tc: QTextCursor = self.textCursor()
         tc.select(QTextCursor.SelectionType.WordUnderCursor)
@@ -173,43 +188,43 @@ class QCodeEditor(QTextEdit):
         self.setTextCursor(tc)
 
     # noinspection PyUnusedLocal
-    def updateLineNumberAreaWidth(self, w: int):
-        self.setViewportMargins(self.m_lineNumberArea.sizeHint().width(), 0, 0, 0)
+    def _updateLineNumberAreaWidth(self, w: int):
+        self.setViewportMargins(self._lineNumberArea.sizeHint().width(), 0, 0, 0)
 
-    def updateLineNumberArea(self, rect: QRect):
+    def _updateLineNumberArea(self, rect: QRect):
         # noinspection PyArgumentList
-        self.m_lineNumberArea.update(
-            0, rect.y(), self.m_lineNumberArea.sizeHint().width(), rect.height()
+        self._lineNumberArea.update(
+            0, rect.y(), self._lineNumberArea.sizeHint().width(), rect.height()
         )
 
-    def updateExtraSelection(self):
+    def _updateExtraSelection(self):
         extra = []
         self._highlightCurrentLine(extra)
         self._highlightParenthesis(extra)
         self.setExtraSelections(extra)
 
-    def updateStyle(self):
-        if self.m_highlighter:
-            self.m_highlighter.rehighlight()
+    def _updateStyle(self):
+        if self._highlighter:
+            self._highlighter.rehighlight()
 
-        if self.m_syntaxStyle:
+        if self._syntaxStyle:
             currentPalette = self.palette()
             currentPalette.setColor(
                 QPalette.ColorRole.Text,
-                self.m_syntaxStyle.getFormat("Text").foreground().color(),
+                self._syntaxStyle.getFormat("Text").foreground().color(),
             )
             currentPalette.setColor(
-                QPalette.Base, self.m_syntaxStyle.getFormat("Text").background().color()
+                QPalette.Base, self._syntaxStyle.getFormat("Text").background().color()
             )
             currentPalette.setColor(
                 QPalette.Highlight,
-                self.m_syntaxStyle.getFormat("Selection").background().color(),
+                self._syntaxStyle.getFormat("Selection").background().color(),
             )
             self.setPalette(currentPalette)
 
-        self.updateExtraSelection()
+        self._updateExtraSelection()
 
-    def onSelectionChanged(self):
+    def _onSelectionChanged(self):
         cursor = self.textCursor()
 
         if cursor.isNull():
@@ -228,17 +243,21 @@ class QCodeEditor(QTextEdit):
         #     self._handleSelectionQuery(cursor)
         #     self.setTextCursor(backup)
 
+    # noinspection PyUnusedLocal
     def insertFromMimeData(self, source: QMimeData, **kwargs):
         self.insertPlainText(source.text())
 
+    # noinspection PyUnusedLocal
     def paintEvent(self, e: QPaintEvent, **kwargs):
-        self.updateLineNumberArea(e.rect())
+        self._updateLineNumberArea(e.rect())
         super().paintEvent(e)
 
+    # noinspection PyUnusedLocal
     def resizeEvent(self, e: QResizeEvent, **kwargs):
         super().resizeEvent(e)
         self._updateLineGeometry()
 
+    # noinspection PyUnusedLocal
     def keyPressEvent(self, e: QKeyEvent, **kwargs):
         completerSkip = self._proceedCompleterBegin(e)
         key = e.key()
@@ -249,8 +268,8 @@ class QCodeEditor(QTextEdit):
             return
 
         # Insert tab replace only
-        if self.m_replaceTab and key == Qt.Key_Tab and modifiers == Qt.NoModifier:
-            self.insertPlainText(self.m_tabReplace)
+        if self._replaceTab and key == Qt.Key_Tab and modifiers == Qt.NoModifier:
+            self.insertPlainText(self._tabReplace)
             return
 
         indentationLevel = self.getIndentationSpaces()
@@ -259,7 +278,7 @@ class QCodeEditor(QTextEdit):
         # Have Qt Editor like behaviour, if {|} and enter is pressed
         # indent the two parenthesis
         if (
-            self.m_autoIndentation
+            self._autoIndentation
             and (key == Qt.Key_Return or key == Qt.Key_Enter)
             and self._charUnderCursor() == "}"
             and self._charUnderCursor(-1) == "{"
@@ -268,25 +287,26 @@ class QCodeEditor(QTextEdit):
             return
 
         # Do back tap
-        if self.m_replaceTab and key == Qt.Key_Backtab:
+        if self._replaceTab and key == Qt.Key_Backtab:
             self._doBackTab(indentationLevel)
             return
 
         super().keyPressEvent(e)
 
         # Do auto indentation
-        if self.m_autoIndentation and (key == Qt.Key_Return or key == Qt.Key_Enter):
+        if self._autoIndentation and (key == Qt.Key_Return or key == Qt.Key_Enter):
             self._doAutoIndentation(indentationLevel, tabCounts)
 
         # Do auto parentheses
-        if self.m_autoParentheses:
+        if self._autoParentheses:
             self._doAutoParentheses(text=e.text())
 
         self._proceedCompleterEnd(e)
 
+    # noinspection PyUnusedLocal
     def focusInEvent(self, e, **kwargs):
-        if self.m_completer:
-            self.m_completer.setWidget(self)
+        if self._completer:
+            self._completer.setWidget(self)
         super().focusInEvent(e)
 
     def _initDocumentLayoutHandlers(self):
@@ -296,28 +316,24 @@ class QCodeEditor(QTextEdit):
         pass
 
     def _initFont(self):
-        # noinspection PyArgumentList
-        fnt = QFontDatabase.systemFont(QFontDatabase.FixedFont)
-        fnt.setFixedPitch(True)
-        fnt.setPointSize(self.m_fontSize)
-        self.setFont(fnt)
+        self.setFontSize(DEFAULT_FONT_POINT_SIZE)
 
     def _performConnections(self):
         doc = self.document()
         # noinspection PyUnresolvedReferences
-        doc.blockCountChanged.connect(self.updateLineNumberAreaWidth)
+        doc.blockCountChanged.connect(self._updateLineNumberAreaWidth)
 
         def _vbar_changed(_):
-            self.m_lineNumberArea.update()
+            self._lineNumberArea.update()
 
         vbar = self.verticalScrollBar()
         # noinspection PyUnresolvedReferences
         vbar.valueChanged.connect(_vbar_changed)
 
         # noinspection PyUnresolvedReferences
-        self.cursorPositionChanged.connect(self.updateExtraSelection)
+        self.cursorPositionChanged.connect(self._updateExtraSelection)
         # noinspection PyUnresolvedReferences
-        self.selectionChanged.connect(self.onSelectionChanged)
+        self.selectionChanged.connect(self._onSelectionChanged)
 
     # FIXME
     # def _handleSelectionQuery(self, cursor: QTextCursor):
@@ -332,12 +348,12 @@ class QCodeEditor(QTextEdit):
         cr = self.contentsRect()
         x = cr.left()
         y = cr.top()
-        w = self.m_lineNumberArea.sizeHint().width()
+        w = self._lineNumberArea.sizeHint().width()
         h = cr.height()
-        self.m_lineNumberArea.setGeometry(QRect(x, y, w, h))
+        self._lineNumberArea.setGeometry(QRect(x, y, w, h))
 
     def _proceedCompleterBegin(self, e: QKeyEvent) -> bool:
-        if self.m_completer and self.m_completer.popup().isVisible():
+        if self._completer and self._completer.popup().isVisible():
             key = e.key()
             shouldIgnore = key == Qt.Key_Enter
             shouldIgnore = shouldIgnore or key == Qt.Key_Return
@@ -348,35 +364,35 @@ class QCodeEditor(QTextEdit):
                 e.ignore()
                 return True
         isShortcut = utils.is_shortcut(e, Qt.ControlModifier, Qt.Key_Space)
-        return not (not self.m_completer or not isShortcut)
+        return not (not self._completer or not isShortcut)
 
     def _proceedCompleterEnd(self, e: QKeyEvent):
         key = e.key()
         ctrlOrShift = utils.has_modifier(e, Qt.ControlModifier, Qt.ShiftModifier)
         text = e.text()
         isEmpty = len(text) <= 0
-        if not self.m_completer or (ctrlOrShift and isEmpty) or key == Qt.Key_Delete:
+        if not self._completer or (ctrlOrShift and isEmpty) or key == Qt.Key_Delete:
             return
         eow = r""""(~!@#$%^&*()_+{}|:"<>?,./;'[]\-=)"""
         isShortcut = utils.is_shortcut(e, Qt.ControlModifier, Qt.Key_Space)
         completionPrefix = self._wordUnderCursor()
         isContainChar = len(text) > 0 and (text[-1] in eow)
         if (not isShortcut) and (isEmpty or len(completionPrefix) < 2 or isContainChar):
-            self.m_completer.popup().hide()
+            self._completer.popup().hide()
             return
 
-        if completionPrefix != self.m_completer.completionPrefix():
-            self.m_completer.setCompletionPrefix(completionPrefix)
-            self.m_completer.popup().setCurrentIndex(
-                self.m_completer.completionModel().index(0, 0)
+        if completionPrefix != self._completer.completionPrefix():
+            self._completer.setCompletionPrefix(completionPrefix)
+            self._completer.popup().setCurrentIndex(
+                self._completer.completionModel().index(0, 0)
             )
 
         cursRect = self.cursorRect()
         cursRect.setWidth(
-            self.m_completer.popup().sizeHintForColumn(0)
-            + self.m_completer.popup().verticalScrollBar().sizeHint().width()
+            self._completer.popup().sizeHintForColumn(0)
+            + self._completer.popup().verticalScrollBar().sizeHint().width()
         )
-        self.m_completer.complete(cursRect)
+        self._completer.complete(cursRect)
 
     def _charUnderCursor(self, offset: int = 0) -> str:
         cursor: QTextCursor = self.textCursor()
@@ -399,7 +415,7 @@ class QCodeEditor(QTextEdit):
     def _highlightCurrentLine(self, extraSelection: List[QTextEdit.ExtraSelection]):
         if not self.isReadOnly():
             selection = QTextEdit.ExtraSelection()
-            selection.format = self.m_syntaxStyle.getFormat("CurrentLine")
+            selection.format = self._syntaxStyle.getFormat("CurrentLine")
             selection.format.setForeground(QBrush())
             selection.cursor = self.textCursor()
             selection.cursor.clearSelection()
@@ -439,7 +455,7 @@ class QCodeEditor(QTextEdit):
                     counter -= 1
                 else:
                     pass
-            format_ = self.m_syntaxStyle.getFormat("Parentheses")
+            format_ = self._syntaxStyle.getFormat("Parentheses")
 
             if counter == 0:
                 selection = QTextEdit.ExtraSelection()
@@ -485,10 +501,10 @@ class QCodeEditor(QTextEdit):
         return indentationLevel
 
     def setDefaultIndent(self, indent: int):
-        self.m_defaultIndent = max(0, indent)
+        self._defaultIndent = max(0, indent)
 
     def defaultIndent(self) -> int:
-        return self.m_defaultIndent
+        return self._defaultIndent
 
     def _tabCounts(self, indentationLevel: int) -> int:
         avgCharWidth = self.fontMetrics().averageCharWidth()
@@ -507,7 +523,7 @@ class QCodeEditor(QTextEdit):
         charsBack = 0
         self.insertPlainText("\n")
 
-        if self.m_replaceTab:
+        if self._replaceTab:
             _indentStr = " " * (indentationLevel + defaultIndent)
             self.insertPlainText(_indentStr)
         else:
@@ -517,7 +533,7 @@ class QCodeEditor(QTextEdit):
         self.insertPlainText("\n")
         charsBack += 1
 
-        if self.m_replaceTab:
+        if self._replaceTab:
             self.insertPlainText(" " * indentationLevel)
             charsBack += indentationLevel
         else:
@@ -540,7 +556,7 @@ class QCodeEditor(QTextEdit):
         cursor.removeSelectedText()
 
     def _doAutoIndentation(self, indentationLevel: int, tabCounts: int):
-        indentChars = " " * indentationLevel if self.m_replaceTab else "\t" * tabCounts
+        indentChars = " " * indentationLevel if self._replaceTab else "\t" * tabCounts
         self.insertPlainText(indentChars)
 
     def _doAutoParentheses(self, text: str):

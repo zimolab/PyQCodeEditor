@@ -8,8 +8,8 @@ from typing import List, Dict
 class QLanguage(object):
     def __init__(self, file: str | None = None):
         super().__init__()
-        self.m_loaded: bool = False
-        self.m_list: Dict[str, List[str]] = {}
+        self._loaded: bool = False
+        self._list: Dict[str, List[str]] = {}
         if file:
             self.load(file)
 
@@ -26,17 +26,17 @@ class QLanguage(object):
         for section_name, section in data.items():
             if not isinstance(section, list):
                 continue
-            self.m_list[section_name] = section
-            self.m_loaded = True
-        return self.m_loaded
+            self._list[section_name] = section
+            self._loaded = True
+        return self._loaded
 
     def keys(self) -> List[str]:
-        return list(self.m_list.keys())
+        return list(self._list.keys())
 
     def names(self, key: str) -> List[str]:
-        if key in self.m_list:
-            return self.m_list[key]
+        if key in self._list:
+            return self._list[key]
         return []
 
     def isLoaded(self) -> bool:
-        return self.m_loaded
+        return self._loaded

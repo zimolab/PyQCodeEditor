@@ -30,12 +30,12 @@ class QSyntaxStyle(QObject):
     def __init__(self, parent: QObject | None = None):
         super().__init__(parent)
 
-        self.m_name: str = ""
-        self.m_loaded: bool = False
-        self.m_data: Dict[str, QTextCharFormat] = {}
+        self._name: str = ""
+        self._loaded: bool = False
+        self._data: Dict[str, QTextCharFormat] = {}
 
     def load(self, file: str, encoding="utf-8", errors="strict") -> bool:
-        self.m_loaded = False
+        self._loaded = False
         try:
             with utils.open_resource_text_file(file, encoding, errors) as f:
                 data = json.load(f)
@@ -44,16 +44,16 @@ class QSyntaxStyle(QObject):
         except Exception as e:
             warnings.warn(f"Can't load style schema: {e}")
             traceback.print_exc()
-        return self.m_loaded
+        return self._loaded
 
     def name(self) -> str:
-        return self.m_name
+        return self._name
 
     def isLoaded(self) -> bool:
-        return self.m_loaded
+        return self._loaded
 
     def getFormat(self, name: str) -> QTextCharFormat:
-        return self.m_data.get(name, QTextCharFormat())
+        return self._data.get(name, QTextCharFormat())
 
     def _processStyleSchema(self, style_schema: Dict[str, Any]):
         name = style_schema.get("name", None)
@@ -62,7 +62,7 @@ class QSyntaxStyle(QObject):
         styles = style_schema.get("style", None)
         if not isinstance(styles, list):
             return
-        self.m_loaded = True
+        self._loaded = True
 
         for style in styles:
             if not isinstance(style, dict):
@@ -93,12 +93,12 @@ class QSyntaxStyle(QObject):
                 underlineStyle, QTextCharFormat.UnderlineStyle.NoUnderline
             )
             style_format.setUnderlineStyle(underlineStyle)
-            self.m_data[style_name] = style_format
+            self._data[style_name] = style_format
 
     def clear(self):
-        self.m_loaded = False
-        self.m_data.clear()
-        self.m_name = ""
+        self._loaded = False
+        self._data.clear()
+        self._name = ""
 
     @classmethod
     def defaultStyle(cls) -> "QSyntaxStyle":
