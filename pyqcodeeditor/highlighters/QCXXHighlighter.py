@@ -1,15 +1,13 @@
 from __future__ import annotations
 
-import os
-import warnings
 from typing import List
 
 from qtpy.QtCore import QRegularExpression
 from qtpy.QtGui import QTextDocument
 
+from .QHighlightRule import QHighlightRule
 from .. import utils
 from ..QStyleSyntaxHighlighter import QStyleSyntaxHighlighter
-from .QHighlightRule import QHighlightRule
 
 
 # noinspection PyPep8Naming
