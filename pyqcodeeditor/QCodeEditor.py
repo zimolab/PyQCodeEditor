@@ -102,7 +102,7 @@ class QCodeEditor(QTextEdit):
     def fontSize(self) -> int:
         return self.font().pointSize()
 
-    def setHighlighter(self, highlighter: QStyleSyntaxHighlighter):
+    def setHighlighter(self, highlighter: QStyleSyntaxHighlighter | None):
         if self._highlighter is not None:
             self._highlighter.setSyntaxStyle(None)
             self._highlighter.deleteLater()
