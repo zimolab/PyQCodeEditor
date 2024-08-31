@@ -23,13 +23,11 @@ UNDERLINE_STYLES = {
 
 
 # noinspection PyPep8Naming
-class QSyntaxStyle(QObject):
+class QSyntaxStyle(object):
 
     _defaultStyle: QSyntaxStyle | None = None
 
-    def __init__(self, parent: QObject | None = None):
-        super().__init__(parent)
-
+    def __init__(self):
         self._name: str = ""
         self._loaded: bool = False
         self._data: Dict[str, QTextCharFormat] = {}

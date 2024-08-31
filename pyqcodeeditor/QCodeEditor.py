@@ -52,6 +52,7 @@ class QCodeEditor(QTextEdit):
         self._tabReplace: str = " " * DEFAULT_TAB_WIDTH
         self._defaultIndent: int = self.tabReplaceSize()
 
+        # noinspection PyArgumentList
         _font = QFontDatabase.systemFont(QFontDatabase.FixedFont)
         self.setFont(_font)
 
@@ -105,28 +106,19 @@ class QCodeEditor(QTextEdit):
         if self._highlighter is not None:
             self._highlighter.setSyntaxStyle(None)
             self._highlighter.setDocument(None)
-            self._highlighter = None
 
         self._highlighter = highlighter
         if self._highlighter:
             self._highlighter.setSyntaxStyle(self._syntaxStyle)
             self._highlighter.setDocument(self.document())
-            self._highlighter.setParent(self)
 
     def setSyntaxStyle(self, syntaxStyle: QSyntaxStyle):
         assert syntaxStyle is not None
-        if syntaxStyle != QSyntaxStyle.defaultStyle():
-            self._syntaxStyle = None
-
         self._syntaxStyle = syntaxStyle
-        if self._syntaxStyle:
-            self._syntaxStyle.setParent(self)
-
         # self.m_framedAttribute.setSyntaxStyle(syntaxStyle)
         self._lineNumberArea.setSyntaxStyle(syntaxStyle)
         if self._highlighter:
             self._highlighter.setSyntaxStyle(syntaxStyle)
-
         self._updateStyle()
 
     def setAutoParentheses(self, enable: bool):
@@ -160,13 +152,11 @@ class QCodeEditor(QTextEdit):
                 popup.hide()
             # noinspection PyUnresolvedReferences
             self._completer.activated.disconnect(self._insertCompletion)
-            self._completer = None
 
         self._completer = completer
         if not self._completer:
             return
 
-        self._completer.setParent(self)
         self._completer.setWidget(self)
         self._completer.setCompletionMode(QCompleter.CompletionMode.PopupCompletion)
         # noinspection PyUnresolvedReferences
