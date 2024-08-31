@@ -23,7 +23,6 @@ from .QLineNumberArea import QLineNumberArea
 from .QStyleSyntaxHighlighter import QStyleSyntaxHighlighter
 from .QSyntaxStyle import QSyntaxStyle
 
-
 PARENTHESES = [
     ("(", ")"),
     ("{", "}"),
@@ -105,31 +104,29 @@ class QCodeEditor(QTextEdit):
     def setHighlighter(self, highlighter: QStyleSyntaxHighlighter | None):
         if self._highlighter is not None:
             self._highlighter.setSyntaxStyle(None)
-            self._highlighter.deleteLater()
+            self._highlighter.setDocument(None)
             self._highlighter = None
 
         self._highlighter = highlighter
         if self._highlighter:
             self._highlighter.setSyntaxStyle(self._syntaxStyle)
             self._highlighter.setDocument(self.document())
-
-            if self._highlighter.parent() is None:
-                highlighter.setParent(self)
+            self._highlighter.setParent(self)
 
     def setSyntaxStyle(self, syntaxStyle: QSyntaxStyle):
         assert syntaxStyle is not None
         if syntaxStyle != QSyntaxStyle.defaultStyle():
-            self._syntaxStyle.clear()
-            self._syntaxStyle.deleteLater()
             self._syntaxStyle = None
 
         self._syntaxStyle = syntaxStyle
+        if self._syntaxStyle:
+            self._syntaxStyle.setParent(self)
+
         # self.m_framedAttribute.setSyntaxStyle(syntaxStyle)
         self._lineNumberArea.setSyntaxStyle(syntaxStyle)
         if self._highlighter:
             self._highlighter.setSyntaxStyle(syntaxStyle)
-            if self._syntaxStyle.parent() is None:
-                self._syntaxStyle.setParent(self)
+
         self._updateStyle()
 
     def setAutoParentheses(self, enable: bool):
@@ -163,19 +160,17 @@ class QCodeEditor(QTextEdit):
                 popup.hide()
             # noinspection PyUnresolvedReferences
             self._completer.activated.disconnect(self._insertCompletion)
-            self._completer.deleteLater()
             self._completer = None
 
         self._completer = completer
         if not self._completer:
             return
 
+        self._completer.setParent(self)
         self._completer.setWidget(self)
         self._completer.setCompletionMode(QCompleter.CompletionMode.PopupCompletion)
         # noinspection PyUnresolvedReferences
         self._completer.activated.connect(self._insertCompletion)
-        if self._completer.parent() is None:
-            completer.setParent(self)
 
     def completer(self) -> QCompleter | None:
         return self._completer
