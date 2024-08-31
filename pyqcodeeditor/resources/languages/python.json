@@ -34,5 +34,8 @@
     "byte",
     "set",
     "dict"
+  ],
+  "Global": [
+    "None"
   ]
 }
