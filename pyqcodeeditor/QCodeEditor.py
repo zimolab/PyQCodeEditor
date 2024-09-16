@@ -31,7 +31,7 @@ PARENTHESES = [
     ("'", "'"),
 ]
 
-DEFAULT_FONT_POINT_SIZE: int = 14
+DEFAULT_FONT_POINT_SIZE: int | None = None
 DEFAULT_TAB_WIDTH: int = 4
 
 
@@ -302,7 +302,8 @@ class QCodeEditor(QTextEdit):
         pass
 
     def _initFont(self):
-        self.setFontSize(DEFAULT_FONT_POINT_SIZE)
+        if DEFAULT_FONT_POINT_SIZE and DEFAULT_FONT_POINT_SIZE > 0:
+            self.setFontSize(DEFAULT_FONT_POINT_SIZE)
 
     def _performConnections(self):
         doc = self.document()
