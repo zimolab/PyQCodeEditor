@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import List
+from typing import List, Union
 
 # noinspection PyUnresolvedReferences
 from qtpy.QtCore import QRect, QMimeData, Qt
@@ -31,7 +31,7 @@ PARENTHESES = [
     ("'", "'"),
 ]
 
-DEFAULT_FONT_POINT_SIZE: int | None = None
+DEFAULT_FONT_POINT_SIZE: Union[int, None] = None
 DEFAULT_TAB_WIDTH: int = 4
 
 
@@ -94,13 +94,33 @@ class QCodeEditor(QTextEdit):
     def setFontSize(self, fontSize: int):
         assert fontSize > 0
         font = self.font()
-        font.setPointSize(fontSize)
+        font.setPixelSize(fontSize)
         font.setFixedPitch(True)
         self.setFont(font)
         self._updateLineNumberAreaWidth(0)
 
     def fontSize(self) -> int:
+        return self.font().pixelSize()
+
+    def setFontPointSize(self, pointSize: int):
+        assert pointSize > 0
+        font = self.font()
+        font.setPointSize(pointSize)
+        font.setFixedPitch(True)
+        self.setFont(font)
+        self._updateLineNumberAreaWidth(0)
+
+    def fontPointSize(self) -> int:
         return self.font().pointSize()
+
+    def setFontFamily(self, fontFamily: str):
+        font = self.font()
+        font.setFamily(fontFamily)
+        self.setFont(font)
+        self._updateLineNumberAreaWidth(0)
+
+    def fontFamily(self) -> str:
+        return self.font().family()
 
     def setHighlighter(self, highlighter: QStyleSyntaxHighlighter | None):
         if self._highlighter is not None:
